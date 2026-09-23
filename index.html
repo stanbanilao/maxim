@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAXIM Retail Intelligence</title>
+  <meta name="description" content="Interactive retail intelligence dashboard for attendance, footfall, revenue opportunity and device health.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#" data-nav="overview" aria-label="MAXIM Retail Intelligence home">
+        <span class="brand-mark">M</span>
+        <span class="brand-copy"><strong>MAXIM</strong><small>Retail Intelligence</small></span>
+      </a>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">⌂</span><span>Overview</span></button>
+        <button class="nav-item" data-view="attendance"><span class="nav-icon">◷</span><span>Attendance</span></button>
+        <button class="nav-item" data-view="footfall"><span class="nav-icon">↳</span><span>Footfall</span></button>
+        <button class="nav-item" data-view="opportunity"><span class="nav-icon">R</span><span>Revenue Opportunity</span></button>
+        <button class="nav-item" data-view="devices"><span class="nav-icon">●</span><span>Device Health</span></button>
+      </nav>
+
+      <div class="sidebar-note">
+        <span class="status-line"><i></i> Demo environment</span>
+        <p>Interactive prototype using representative retail data. Live integrations can replace the demo dataset.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">Retail operations command centre</span>
+          <h1 id="pageTitle">National Retail Overview</h1>
+          <p id="pageSub">Attendance, customer traffic and commercial opportunity in one live-style view.</p>
+        </div>
+        <div class="top-actions">
+          <span class="live-chip"><i></i> Data simulated live</span>
+          <button class="ghost-btn" id="exportBtn">Export CSV</button>
+        </div>
+      </header>
+
+      <section class="filter-bar card" aria-label="Dashboard filters">
+        <div class="filter-group">
+          <label for="regionFilter">Region</label>
+          <select id="regionFilter"></select>
+        </div>
+        <div class="filter-group">
+          <label for="storeFilter">Store</label>
+          <select id="storeFilter"></select>
+        </div>
+        <div class="filter-group">
+          <label for="periodFilter">Reporting period</label>
+          <select id="periodFilter">
+            <option value="1">Today</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+          </select>
+        </div>
+        <button class="reset-btn" id="resetFilters">Reset filters</button>
+        <div class="filter-context">
+          <span>Current view</span>
+          <strong id="filterContext">All regions · All stores · Today</strong>
+        </div>
+      </section>
+
+      <section id="view-overview" class="view active">
+        <div class="kpi-grid">
+          <button class="kpi-card card touch-card" data-go="attendance">
+            <span class="kpi-label">Attendance rate</span>
+            <strong id="ovAttendance">—</strong>
+            <span class="kpi-foot good" id="ovAttendanceSub">—</span>
+          </button>
+          <button class="kpi-card card touch-card" data-go="attendance">
+            <span class="kpi-label">Late arrivals</span>
+            <strong id="ovLate">—</strong>
+            <span class="kpi-foot warn" id="ovLateSub">—</span>
+          </button>
+          <button class="kpi-card card touch-card" data-go="footfall">
+            <span class="kpi-label">Store entries</span>
+            <strong id="ovEntries">—</strong>
+            <span class="kpi-foot accent" id="ovCapture">—</span>
+          </button>
+          <button class="kpi-card card touch-card" data-go="opportunity">
+            <span class="kpi-label">Revenue opportunity</span>
+            <strong id="ovOpportunity">—</strong>
+            <span class="kpi-foot" id="ovOpportunitySub">—</span>
+          </button>
+          <button class="kpi-card card touch-card" data-go="devices">
+            <span class="kpi-label">Offline devices</span>
+            <strong id="ovOffline">—</strong>
+            <span class="kpi-foot bad" id="ovOfflineSub">—</span>
+          </button>
+        </div>
+
+        <div class="grid overview-grid">
+          <article class="card panel">
+            <div class="panel-head">
+              <div>
+                <span class="section-kicker">Traffic pulse</span>
+                <h2>Pass-by vs store entry</h2>
+                <p>Hover or tap an hour to inspect the traffic and capture rate.</p>
+              </div>
+              <span class="badge" id="trafficPeak">Peak —</span>
+            </div>
+            <div id="trafficChart" class="bar-chart" aria-label="Hourly traffic chart"></div>
+            <div class="chart-legend">
+              <span><i class="legend-pass"></i>Pass-by</span>
+              <span><i class="legend-entry"></i>Entries</span>
+            </div>
+          </article>
+
+          <article class="card panel opportunity-panel">
+            <div class="panel-head">
+              <div>
+                <span class="section-kicker">Operational impact</span>
+                <h2>Late-opening exposure</h2>
+                <p>Estimated commercial opportunity linked to delayed opening.</p>
+              </div>
+              <button class="mini-link" data-go="opportunity">Open model →</button>
+            </div>
+            <div class="impact-ring">
+              <div><span>Estimated</span><strong id="ovImpactBig">—</strong><small>opportunity</small></div>
+            </div>
+            <div class="impact-stats">
+              <div><span>Stores late</span><strong id="ovLateStores">—</strong></div>
+              <div><span>Avg delay</span><strong id="ovAvgDelay">—</strong></div>
+              <div><span>Possible txns</span><strong id="ovPossibleSales">—</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card table-card">
+          <div class="panel-head table-panel-head">
+            <div>
+              <span class="section-kicker">Branch performance</span>
+              <h2>Store operating view</h2>
+              <p>Click a store to focus the entire dashboard on that branch.</p>
+            </div>
+            <div class="table-tools">
+              <input id="storeSearch" class="search-input" type="search" placeholder="Search store or region">
+              <select id="storeRiskFilter">
+                <option value="all">All statuses</option>
+                <option value="attention">Needs attention</option>
+                <option value="healthy">Healthy</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="overviewTable">
+              <thead>
+                <tr>
+                  <th><button data-sort="name">Store ↕</button></th>
+                  <th><button data-sort="attendance">Attendance ↕</button></th>
+                  <th><button data-sort="late">Late ↕</button></th>
+                  <th><button data-sort="entries">Entries ↕</button></th>
+                  <th><button data-sort="capture">Capture ↕</button></th>
+                  <th><button data-sort="opportunity">Opportunity ↕</button></th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="overviewRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="view-attendance" class="view">
+        <div class="kpi-grid">
+          <div class="kpi-card card"><span class="kpi-label">Expected staff</span><strong id="atExpected">—</strong><span class="kpi-foot">Scheduled workforce</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Present</span><strong id="atPresent">—</strong><span class="kpi-foot good" id="atPresentSub">—</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Late</span><strong id="atLate">—</strong><span class="kpi-foot warn" id="atLateSub">—</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Absent</span><strong id="atAbsent">—</strong><span class="kpi-foot bad" id="atAbsentSub">—</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Stores late to open</span><strong id="atLateStores">—</strong><span class="kpi-foot">Operational readiness</span></div>
+        </div>
+
+        <div class="grid two-col">
+          <article class="card panel">
+            <div class="panel-head">
+              <div><span class="section-kicker">Compliance</span><h2>Attendance by store</h2><p>Branches are ranked by attendance compliance.</p></div>
+              <select id="attendanceThreshold">
+                <option value="0">Show all stores</option>
+                <option value="95">Below 95%</option>
+                <option value="90">Below 90%</option>
+              </select>
+            </div>
+            <div id="attendanceBars" class="rank-bars"></div>
+          </article>
+
+          <article class="card panel">
+            <div class="panel-head"><div><span class="section-kicker">Timing</span><h2>Late arrival profile</h2><p>Distribution of staff lateness.</p></div></div>
+            <div class="donut-wrap">
+              <div class="donut" id="lateDonut"><div><strong id="lateDonutValue">—</strong><span>late staff</span></div></div>
+              <div class="donut-legend">
+                <button data-late-band="minor"><i class="dot-green"></i><span>1–10 min</span><strong id="lateMinor">—</strong></button>
+                <button data-late-band="medium"><i class="dot-yellow"></i><span>11–30 min</span><strong id="lateMedium">—</strong></button>
+                <button data-late-band="major"><i class="dot-red"></i><span>31+ min</span><strong id="lateMajor">—</strong></button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card table-card">
+          <div class="panel-head table-panel-head">
+            <div><span class="section-kicker">Exceptions</span><h2>Attendance exceptions</h2><p>Focus on branches that need follow-up.</p></div>
+            <span class="badge" id="attendanceExceptionCount">— exceptions</span>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>Store</th><th>Expected</th><th>Present</th><th>Late</th><th>Absent</th><th>Attendance</th><th>Opening</th></tr></thead>
+              <tbody id="attendanceRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="view-footfall" class="view">
+        <div class="kpi-grid">
+          <div class="kpi-card card"><span class="kpi-label">Pass-by traffic</span><strong id="ffPassby">—</strong><span class="kpi-foot">Outside storefronts</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Store entries</span><strong id="ffEntries">—</strong><span class="kpi-foot accent">Customer visits</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Capture rate</span><strong id="ffCapture">—</strong><span class="kpi-foot">Pass-by → entry</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Estimated buyers</span><strong id="ffBuyers">—</strong><span class="kpi-foot good">Using conversion</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Counters offline</span><strong id="ffOffline">—</strong><span class="kpi-foot bad">May affect totals</span></div>
+        </div>
+
+        <div class="grid two-col">
+          <article class="card panel">
+            <div class="panel-head">
+              <div><span class="section-kicker">Hourly behaviour</span><h2>Customer traffic by hour</h2><p>Tap any bar to pin its detail.</p></div>
+              <span class="badge" id="footfallPinned">Nothing pinned</span>
+            </div>
+            <div id="footfallChart" class="hourly-chart"></div>
+          </article>
+
+          <article class="card panel">
+            <div class="panel-head"><div><span class="section-kicker">Conversion funnel</span><h2>Traffic to transaction</h2><p>A simplified funnel using historical assumptions.</p></div></div>
+            <div class="funnel-list">
+              <div><span>Pass-by</span><div><i id="funnelPass"></i></div><strong id="funnelPassVal">—</strong></div>
+              <div><span>Entered</span><div><i id="funnelEntry"></i></div><strong id="funnelEntryVal">—</strong></div>
+              <div><span>Estimated buyers</span><div><i id="funnelBuyer"></i></div><strong id="funnelBuyerVal">—</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card table-card">
+          <div class="panel-head table-panel-head">
+            <div><span class="section-kicker">Capture performance</span><h2>Store capture leaderboard</h2><p>Compare how efficiently branches convert outside traffic into store entries.</p></div>
+            <button class="ghost-btn" id="captureSortBtn">Sort: Highest capture</button>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>Store</th><th>Pass-by</th><th>Entries</th><th>Capture</th><th>Conversion</th><th>Avg basket</th><th>Signal</th></tr></thead>
+              <tbody id="footfallRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="view-opportunity" class="view">
+        <div class="grid calc-grid">
+          <article class="card panel">
+            <div class="panel-head">
+              <div><span class="section-kicker">Interactive model</span><h2>Revenue opportunity calculator</h2><p>Change any assumption and the result updates immediately.</p></div>
+              <span class="badge">Live calculation</span>
+            </div>
+
+            <div class="scenario-row">
+              <button class="scenario-btn" data-scenario="conservative">Conservative</button>
+              <button class="scenario-btn active" data-scenario="baseline">Baseline</button>
+              <button class="scenario-btn" data-scenario="ambitious">High capture</button>
+            </div>
+
+            <div class="calc-fields">
+              <label>Scheduled opening<input id="scheduled" type="time" value="09:00"></label>
+              <label>Actual operational opening<input id="actual" type="time" value="09:35"></label>
+              <label>Passers during late window<input id="passers" type="number" min="0" value="420"></label>
+              <label>Historical capture rate<div class="range-field"><input id="captureRange" type="range" min="0" max="30" step=".1" value="4.8"><input id="capture" type="number" min="0" max="30" step=".1" value="4.8"></div></label>
+              <label>In-store conversion<div class="range-field"><input id="conversionRange" type="range" min="0" max="100" step="1" value="28"><input id="conversion" type="number" min="0" max="100" step="1" value="28"></div></label>
+              <label>Average basket value (R)<input id="basket" type="number" min="0" value="850"></label>
+            </div>
+            <button class="reset-btn wide" id="loadStoreModel">Reload selected store assumptions</button>
+          </article>
+
+          <article class="card panel result-panel">
+            <div class="panel-head">
+              <div><span class="section-kicker">Commercial exposure</span><h2 id="modelStoreName">Selected network</h2><p>Indicative opportunity, not confirmed accounting loss.</p></div>
+              <span class="badge" id="lateBadge">— min late</span>
+            </div>
+            <div class="formula">Passers × capture rate × in-store conversion × average basket value</div>
+            <div class="model-result">
+              <span>Estimated missed sales opportunity</span>
+              <strong id="resultBig">R0</strong>
+              <small id="resultNarrative">Adjust the inputs to test a scenario.</small>
+            </div>
+            <div class="result-mini-grid">
+              <div><span>Likely missed entrants</span><strong id="likelyEntrants">—</strong></div>
+              <div><span>Possible transactions</span><strong id="possibleSales">—</strong></div>
+              <div><span>Late-window value / min</span><strong id="valuePerMinute">—</strong></div>
+            </div>
+            <div class="model-note">For production use, capture rate, conversion and basket size should preferably be supplied by historical people-counter and POS/till data.</div>
+          </article>
+        </div>
+      </section>
+
+      <section id="view-devices" class="view">
+        <div class="kpi-grid">
+          <div class="kpi-card card"><span class="kpi-label">Attendance terminals</span><strong id="dvAttendance">—</strong><span class="kpi-foot">Reporting / total</span></div>
+          <div class="kpi-card card"><span class="kpi-label">People counters</span><strong id="dvCounters">—</strong><span class="kpi-foot">Reporting / total</span></div>
+          <div class="kpi-card card"><span class="kpi-label">CCTV analytics</span><strong id="dvCctv">—</strong><span class="kpi-foot">Reporting / total</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Overall uptime</span><strong id="dvUptime">—</strong><span class="kpi-foot good">Network health</span></div>
+          <div class="kpi-card card"><span class="kpi-label">Needs attention</span><strong id="dvAttention">—</strong><span class="kpi-foot bad">Offline or delayed</span></div>
+        </div>
+
+        <article class="card table-card">
+          <div class="panel-head table-panel-head">
+            <div><span class="section-kicker">Infrastructure</span><h2>Device status by store</h2><p>Filter the list to isolate offline and delayed data sources.</p></div>
+            <div class="segmented" id="deviceStatusFilter">
+              <button class="active" data-device-filter="all">All</button>
+              <button data-device-filter="online">Online</button>
+              <button data-device-filter="warning">Delayed</button>
+              <button data-device-filter="offline">Offline</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>Store</th><th>Device</th><th>Status</th><th>Last seen</th><th>Data freshness</th><th>Action</th></tr></thead>
+              <tbody id="deviceRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <footer class="footer">
+        <span>MAXIM Retail Intelligence</span>
+        <span>Prototype designed & powered by Thynkverse</span>
+      </footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
