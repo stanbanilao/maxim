@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MAXIM Retail Intelligence</title>
-  <meta name="description" content="Interactive retail intelligence dashboard for attendance, footfall, revenue opportunity and device health.">
+  <title>Homechoice Retail Operations | MAXIM</title>
+  <meta name="description" content="Interactive Homechoice retail operations dashboard for demo WhatsApp event monitoring, attendance, footfall, store entry and device health.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,6 +17,7 @@
 
       <nav class="nav">
         <button class="nav-item active" data-view="overview"><span class="nav-icon">⌂</span><span>Overview</span></button>
+        <button class="nav-item" data-view="receivers"><span class="nav-icon">✦</span><span>Receivers</span></button>
         <button class="nav-item" data-view="attendance"><span class="nav-icon">◷</span><span>Attendance</span></button>
         <button class="nav-item" data-view="footfall"><span class="nav-icon">↳</span><span>Footfall</span></button>
         <button class="nav-item" data-view="opportunity"><span class="nav-icon">R</span><span>Revenue Opportunity</span></button>
@@ -32,12 +33,12 @@
     <main class="main">
       <header class="topbar">
         <div>
-          <span class="eyebrow">Retail operations command centre</span>
-          <h1 id="pageTitle">National Retail Overview</h1>
-          <p id="pageSub">Attendance, customer traffic and commercial opportunity in one live-style view.</p>
+          <span class="eyebrow">Homechoice × Hikvision × MAXIM IT</span>
+          <h1 id="pageTitle">Homechoice Retail Operations</h1>
+          <p id="pageSub">WhatsApp event monitoring first, with attendance, customer traffic and store entry retained below.</p>
         </div>
         <div class="top-actions">
-          <span class="live-chip"><i></i> Data simulated live</span>
+          <span class="live-chip demo-chip"><i></i> Demo data · no messages sent</span>
           <button class="ghost-btn" id="exportBtn">Export CSV</button>
         </div>
       </header>
@@ -59,6 +60,25 @@
             <option value="30">Last 30 days</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label for="timeFilter">Time window</label>
+          <select id="timeFilter">
+            <option value="all">All day</option>
+            <option value="opening">Opening · 08:00–11:00</option>
+            <option value="midday">Midday · 11:00–15:00</option>
+            <option value="closing">Closing · 15:00–18:00</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="eventFilter">Event type</label>
+          <select id="eventFilter">
+            <option value="all">All WhatsApp events</option>
+            <option value="absence">30+ min no-one-present</option>
+            <option value="late_open">Late store opening</option>
+            <option value="device">Device offline</option>
+            <option value="traffic">Low entry conversion</option>
+          </select>
+        </div>
         <button class="reset-btn" id="resetFilters">Reset filters</button>
         <div class="filter-context">
           <span>Current view</span>
@@ -67,6 +87,40 @@
       </section>
 
       <section id="view-overview" class="view active">
+        <article class="whatsapp-hero card">
+          <div class="whatsapp-heading">
+            <div>
+              <span class="section-kicker">First-line event monitoring</span>
+              <h2>WhatsApp automation report</h2>
+              <p>Representative alert lifecycle data for design and workflow review. No real WhatsApp or Hikvision connection is active.</p>
+            </div>
+            <span class="mode-badge">DEMO MODE</span>
+          </div>
+          <div class="whatsapp-kpis">
+            <div><span>Triggered</span><strong id="waTriggered">—</strong><small>rules matched</small></div>
+            <div><span>Sent</span><strong id="waSent">—</strong><small id="waSentRate">—</small></div>
+            <div><span>Delivered</span><strong id="waDelivered">—</strong><small id="waDeliveryRate">—</small></div>
+            <div><span>Acknowledged</span><strong id="waAcknowledged">—</strong><small id="waAckRate">—</small></div>
+            <div class="danger-metric"><span>Escalated</span><strong id="waEscalated">—</strong><small id="waEscRate">—</small></div>
+          </div>
+        </article>
+
+        <div class="grid whatsapp-grid">
+          <article class="card panel">
+            <div class="panel-head"><div><span class="section-kicker">Alert mix</span><h2>Events by type</h2><p>Triggered alerts under the selected store, time and event filters.</p></div><span class="badge" id="waEventTotal">— events</span></div>
+            <div id="eventTypeChart" class="event-chart"></div>
+          </article>
+          <article class="card panel">
+            <div class="panel-head"><div><span class="section-kicker">30-minute rule</span><h2>No-one-present alerts</h2><p>Duration after the monitored area remained clear. Threshold begins at 30 minutes.</p></div><span class="badge alert-badge">Threshold · 30 min</span></div>
+            <div id="absenceChart" class="absence-chart"></div>
+          </article>
+        </div>
+
+        <article class="card table-card whatsapp-report-card">
+          <div class="panel-head table-panel-head"><div><span class="section-kicker">Store report</span><h2>WhatsApp delivery and response by store</h2><p>Click a store to apply it across the full dashboard.</p></div><button class="mini-link" data-go="receivers">Manage demo routing →</button></div>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>Store</th><th>Triggered</th><th>Delivered</th><th>Acknowledged</th><th>Escalated</th><th>Top event</th><th>Response</th></tr></thead><tbody id="whatsappStoreRows"></tbody></table></div>
+        </article>
+
         <div class="kpi-grid">
           <button class="kpi-card card touch-card" data-go="attendance">
             <span class="kpi-label">Attendance rate</span>
@@ -332,9 +386,31 @@
         </article>
       </section>
 
+      <section id="view-receivers" class="view">
+        <article class="card receiver-banner">
+          <div><span class="section-kicker">Demo routing workspace</span><h2>Receivers</h2><p>Add, edit or remove recipient routes for prototype review. Changes are stored only in this browser using local storage; they do not alter any production routing and cannot send WhatsApp messages.</p></div>
+          <span class="mode-badge">BROWSER-LOCAL DEMO</span>
+        </article>
+        <div class="grid receiver-grid">
+          <form id="receiverForm" class="card panel receiver-form">
+            <div class="panel-head"><div><span class="section-kicker">Recipient routing</span><h2 id="receiverFormTitle">Add receiver</h2><p>Choose which demo events this person would receive.</p></div></div>
+            <input type="hidden" id="receiverId">
+            <label>Receiver name<input id="receiverName" required maxlength="60" placeholder="e.g. Area Manager"></label>
+            <label>WhatsApp number<input id="receiverPhone" required inputmode="tel" maxlength="18" placeholder="e.g. +27 82 000 0000"></label>
+            <label>Store<select id="receiverStore" required></select></label>
+            <fieldset><legend>Event types</legend><label><input type="checkbox" name="receiverEvent" value="absence"> 30+ min no-one-present</label><label><input type="checkbox" name="receiverEvent" value="late_open"> Late store opening</label><label><input type="checkbox" name="receiverEvent" value="device"> Device offline</label><label><input type="checkbox" name="receiverEvent" value="traffic"> Low entry conversion</label></fieldset>
+            <div class="form-actions"><button class="primary-btn" type="submit">Save demo receiver</button><button class="ghost-btn" id="receiverCancel" type="button">Clear</button></div>
+          </form>
+          <article class="card table-card receiver-list-card">
+            <div class="panel-head"><div><span class="section-kicker">Current browser state</span><h2>Demo recipient routes</h2><p id="receiverCount">—</p></div><button class="ghost-btn" id="receiverReset" type="button">Reset demo data</button></div>
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Receiver</th><th>Store</th><th>Events</th><th>Persistence</th><th>Actions</th></tr></thead><tbody id="receiverRows"></tbody></table></div>
+          </article>
+        </div>
+      </section>
+
       <footer class="footer">
         <span>MAXIM Retail Intelligence</span>
-        <span>Prototype designed & powered by Thynkverse</span>
+        <span>Demo prototype · no LIVE messaging or Hikvision connection</span>
       </footer>
     </main>
   </div>
