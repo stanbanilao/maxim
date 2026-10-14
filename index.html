@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MAXIM Retail Intelligence</title>
-  <meta name="description" content="Interactive retail intelligence dashboard for attendance, footfall, revenue opportunity and device health.">
+  <title>Homechoice Retail Operations | MAXIM</title>
+  <meta name="description" content="Interactive Homechoice retail operations dashboard for demo WhatsApp event monitoring, attendance, footfall, store entry and device health.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,12 +14,25 @@
         <span class="brand-mark">M</span>
         <span class="brand-copy"><strong>MAXIM</strong><small>Retail Intelligence</small></span>
       </a>
+      <div class="homechoice-brand" aria-label="Homechoice"><span class="homechoice-heart">♥</span><span><strong>homechoice</strong><small>for the home you love</small></span></div>
 
       <nav class="nav">
         <button class="nav-item active" data-view="overview"><span class="nav-icon">⌂</span><span>Overview</span></button>
-        <button class="nav-item" data-view="attendance"><span class="nav-icon">◷</span><span>Attendance</span></button>
-        <button class="nav-item" data-view="footfall"><span class="nav-icon">↳</span><span>Footfall</span></button>
-        <button class="nav-item" data-view="opportunity"><span class="nav-icon">R</span><span>Revenue Opportunity</span></button>
+        <button class="nav-item" data-view="receivers"><span class="nav-icon">✦</span><span>Receivers</span></button>
+        <span class="nav-group-label">Daily operations</span>
+        <button class="nav-item" data-view="attendance"><span class="nav-icon">◷</span><span>Time & Attendance</span></button>
+        <button class="nav-item" data-view="frontdoor"><span class="nav-icon">▣</span><span>Showroom Front Door</span></button>
+        <button class="nav-item" data-view="people"><span class="nav-icon">◎</span><span>People Counting</span></button>
+        <button class="nav-item" data-view="footfall"><span class="nav-icon">↳</span><span>Foot Counter</span></button>
+        <button class="nav-item" data-view="standards"><span class="nav-icon">✓</span><span>Showroom Standards</span></button>
+        <span class="nav-group-label">Add-on modules</span>
+        <button class="nav-item locked" data-locked="Revenue Opportunity"><span class="nav-icon">R</span><span>Revenue Opportunity</span><b>🔒</b></button>
+        <button class="nav-item locked" data-locked="Vehicle Tracking vs Schedule"><span class="nav-icon">V</span><span>Vehicle Tracking</span><b>🔒</b></button>
+        <button class="nav-item locked" data-locked="Cash Reconciliation"><span class="nav-icon">C</span><span>Cash Reconciliation</span><b>🔒</b></button>
+        <button class="nav-item locked" data-locked="Cash-in-Transit Audit"><span class="nav-icon">A</span><span>Cash-in-Transit Audit</span><b>🔒</b></button>
+        <button class="nav-item locked" data-locked="Budget Management"><span class="nav-icon">B</span><span>Budget Management</span><b>🔒</b></button>
+        <button class="nav-item locked" data-locked="Facilities (MANGO)"><span class="nav-icon">F</span><span>Facilities (MANGO)</span><b>🔒</b></button>
+        <button class="nav-item locked" data-locked="Marketing Insights"><span class="nav-icon">M</span><span>Marketing Insights</span><b>🔒</b></button>
         <button class="nav-item" data-view="devices"><span class="nav-icon">●</span><span>Device Health</span></button>
       </nav>
 
@@ -32,12 +45,12 @@
     <main class="main">
       <header class="topbar">
         <div>
-          <span class="eyebrow">Retail operations command centre</span>
-          <h1 id="pageTitle">National Retail Overview</h1>
-          <p id="pageSub">Attendance, customer traffic and commercial opportunity in one live-style view.</p>
+          <span class="eyebrow">Homechoice × Hikvision × MAXIM IT</span>
+          <h1 id="pageTitle">Homechoice Retail Operations</h1>
+          <p id="pageSub">WhatsApp event monitoring first, with attendance, customer traffic and store entry retained below.</p>
         </div>
         <div class="top-actions">
-          <span class="live-chip"><i></i> Data simulated live</span>
+          <span class="live-chip demo-chip"><i></i> Demo data · no messages sent</span>
           <button class="ghost-btn" id="exportBtn">Export CSV</button>
         </div>
       </header>
@@ -59,6 +72,25 @@
             <option value="30">Last 30 days</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label for="timeFilter">Time window</label>
+          <select id="timeFilter">
+            <option value="all">All day</option>
+            <option value="opening">Opening · 08:00–11:00</option>
+            <option value="midday">Midday · 11:00–15:00</option>
+            <option value="closing">Closing · 15:00–18:00</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="eventFilter">Event type</label>
+          <select id="eventFilter">
+            <option value="all">All WhatsApp events</option>
+            <option value="absence">30+ min no-one-present</option>
+            <option value="late_open">Late store opening</option>
+            <option value="device">Device offline</option>
+            <option value="traffic">Low entry conversion</option>
+          </select>
+        </div>
         <button class="reset-btn" id="resetFilters">Reset filters</button>
         <div class="filter-context">
           <span>Current view</span>
@@ -67,6 +99,48 @@
       </section>
 
       <section id="view-overview" class="view active">
+        <article class="whatsapp-hero card">
+          <div class="whatsapp-heading">
+            <div>
+              <span class="section-kicker">First-line event monitoring</span>
+              <h2>WhatsApp automation report</h2>
+              <p>Representative alert lifecycle data for design and workflow review. No real WhatsApp or Hikvision connection is active.</p>
+            </div>
+            <span class="mode-badge">DEMO MODE</span>
+          </div>
+          <div class="whatsapp-kpis">
+            <div><span>Triggered</span><strong id="waTriggered">—</strong><small>rules matched</small></div>
+            <div><span>Sent</span><strong id="waSent">—</strong><small id="waSentRate">—</small></div>
+            <div><span>Delivered</span><strong id="waDelivered">—</strong><small id="waDeliveryRate">—</small></div>
+            <div><span>Acknowledged</span><strong id="waAcknowledged">—</strong><small id="waAckRate">—</small></div>
+            <div class="danger-metric"><span>Escalated</span><strong id="waEscalated">—</strong><small id="waEscRate">—</small></div>
+          </div>
+        </article>
+
+        <div class="grid whatsapp-grid">
+          <article class="card panel">
+            <div class="panel-head"><div><span class="section-kicker">Alert mix</span><h2>Events by type</h2><p>Triggered alerts under the selected store, time and event filters.</p></div><span class="badge" id="waEventTotal">— events</span></div>
+            <div id="eventTypeChart" class="event-chart"></div>
+          </article>
+          <article class="card panel">
+            <div class="panel-head"><div><span class="section-kicker">30-minute rule</span><h2>No-one-present alerts</h2><p>Duration after the monitored area remained clear. Threshold begins at 30 minutes.</p></div><span class="badge alert-badge">Threshold · 30 min</span></div>
+            <div id="absenceChart" class="absence-chart"></div>
+          </article>
+          <article class="card panel traffic-compact-panel">
+            <div class="panel-head">
+              <div><span class="section-kicker">Traffic pulse</span><h2>Pass-by vs store entry</h2><p>Hourly storefront traffic and captured entries.</p></div>
+              <span class="badge" id="trafficPeak">Peak —</span>
+            </div>
+            <div id="trafficChart" class="bar-chart compact-bar-chart" aria-label="Hourly traffic chart"></div>
+            <div class="chart-legend compact-legend"><span><i class="legend-pass"></i>Pass-by</span><span><i class="legend-entry"></i>Entries</span></div>
+          </article>
+        </div>
+
+        <article class="card table-card whatsapp-report-card">
+          <div class="panel-head table-panel-head"><div><span class="section-kicker">Store report</span><h2>WhatsApp delivery and response by store</h2><p>Click a store to apply it across the full dashboard.</p></div><button class="mini-link" data-go="receivers">Manage demo routing →</button></div>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>Store</th><th>Triggered</th><th>Delivered</th><th>Acknowledged</th><th>Escalated</th><th>Top event</th><th>Response</th></tr></thead><tbody id="whatsappStoreRows"></tbody></table></div>
+        </article>
+
         <div class="kpi-grid">
           <button class="kpi-card card touch-card" data-go="attendance">
             <span class="kpi-label">Attendance rate</span>
@@ -95,24 +169,8 @@
           </button>
         </div>
 
-        <div class="grid overview-grid">
-          <article class="card panel">
-            <div class="panel-head">
-              <div>
-                <span class="section-kicker">Traffic pulse</span>
-                <h2>Pass-by vs store entry</h2>
-                <p>Hover or tap an hour to inspect the traffic and capture rate.</p>
-              </div>
-              <span class="badge" id="trafficPeak">Peak —</span>
-            </div>
-            <div id="trafficChart" class="bar-chart" aria-label="Hourly traffic chart"></div>
-            <div class="chart-legend">
-              <span><i class="legend-pass"></i>Pass-by</span>
-              <span><i class="legend-entry"></i>Entries</span>
-            </div>
-          </article>
-
-          <article class="card panel opportunity-panel">
+        <div class="overview-support-data" aria-hidden="true">
+          <article class="opportunity-panel">
             <div class="panel-head">
               <div>
                 <span class="section-kicker">Operational impact</span>
@@ -168,6 +226,7 @@
       </section>
 
       <section id="view-attendance" class="view">
+        <article class="automation-strip card"><div><span class="wa-icon">WA</span><div><span class="section-kicker">WhatsApp automation · Time & Attendance</span><h2>Attendance exception alerts</h2><p>Notify store and area managers for no clock-in, late arrival, single punch, absence, or attendance below the selected threshold.</p></div></div><div class="automation-flow"><span>Exception detected</span><i>→</i><span>Receiver notified</span><i>→</i><span>Acknowledge</span><i>→</i><span class="escalate">Escalate</span></div></article>
         <div class="kpi-grid">
           <div class="kpi-card card"><span class="kpi-label">Expected staff</span><strong id="atExpected">—</strong><span class="kpi-foot">Scheduled workforce</span></div>
           <div class="kpi-card card"><span class="kpi-label">Present</span><strong id="atPresent">—</strong><span class="kpi-foot good" id="atPresentSub">—</span></div>
@@ -217,6 +276,7 @@
       </section>
 
       <section id="view-footfall" class="view">
+        <article class="automation-strip card"><div><span class="wa-icon">WA</span><div><span class="section-kicker">WhatsApp automation · Foot Counter</span><h2>Counter and conversion alerts</h2><p>Notify on device heartbeat loss, IN/OUT variance, abnormal zero counts, or pass-by-to-entry capture below target.</p></div></div><div class="automation-flow"><span>Counter rule</span><i>→</i><span>Store notified</span><i>→</i><span>Resolve</span><i>→</i><span class="escalate">Area manager</span></div></article>
         <div class="kpi-grid">
           <div class="kpi-card card"><span class="kpi-label">Pass-by traffic</span><strong id="ffPassby">—</strong><span class="kpi-foot">Outside storefronts</span></div>
           <div class="kpi-card card"><span class="kpi-label">Store entries</span><strong id="ffEntries">—</strong><span class="kpi-foot accent">Customer visits</span></div>
@@ -256,6 +316,22 @@
             </table>
           </div>
         </article>
+      </section>
+
+      <section id="view-frontdoor" class="view">
+        <article class="automation-strip card"><div><span class="wa-icon">WA</span><div><span class="section-kicker">WhatsApp automation · Showroom Front Door</span><h2>Front-door event response</h2><p>Send an alert when the entrance remains unattended for 30+ minutes, a door opens outside trading hours, or a configured safety event is detected.</p></div></div><div class="automation-flow"><span>Camera event</span><i>→</i><span>Store manager</span><i>→</i><span>10 min response</span><i>→</i><span class="escalate">Regional escalation</span></div></article>
+        <div class="kpi-grid"><div class="kpi-card card"><span class="kpi-label">Front-door events</span><strong>18</strong><span class="kpi-foot">Illustrative today</span></div><div class="kpi-card card"><span class="kpi-label">30+ min unattended</span><strong>11</strong><span class="kpi-foot bad">Requires response</span></div><div class="kpi-card card"><span class="kpi-label">Acknowledged</span><strong>7</strong><span class="kpi-foot good">63.6%</span></div><div class="kpi-card card"><span class="kpi-label">Escalated</span><strong>4</strong><span class="kpi-foot warn">Regional follow-up</span></div><div class="kpi-card card"><span class="kpi-label">After-hours</span><strong>3</strong><span class="kpi-foot">Security event</span></div></div>
+        <article class="card panel"><div class="panel-head"><div><span class="section-kicker">Showroom exceptions</span><h2>Front-door WhatsApp event queue</h2><p>Illustrative event workflow; no real messages are sent.</p></div></div><div class="rule-grid"><div><b>Eastgate</b><span>Area unattended · 67 min</span><em>Escalated</em></div><div><b>Mall of Africa</b><span>Area unattended · 60 min</span><em>Acknowledged</em></div><div><b>Pavilion</b><span>After-hours opening</span><em>Sent</em></div><div><b>Mimosa Mall</b><span>Area unattended · 56 min</span><em>Delivered</em></div></div></article>
+      </section>
+
+      <section id="view-people" class="view">
+        <article class="automation-strip card"><div><span class="wa-icon">WA</span><div><span class="section-kicker">WhatsApp automation · People Counting</span><h2>Occupancy and traffic alerts</h2><p>Notify when occupancy reaches capacity, counting stops, traffic drops unexpectedly, or sustained queues exceed the selected limit.</p></div></div><div class="automation-flow"><span>Analytics rule</span><i>→</i><span>Operations</span><i>→</i><span>Confirm action</span><i>→</i><span class="escalate">Escalate</span></div></article>
+        <div class="grid two-col"><article class="card panel"><div class="panel-head"><div><span class="section-kicker">Live-style flow</span><h2>People count by hour</h2><p>Uses the same illustrative traffic model as Overview.</p></div></div><div id="peopleFlowChart" class="hourly-chart"></div></article><article class="card panel"><div class="panel-head"><div><span class="section-kicker">Automation rules</span><h2>WhatsApp triggers</h2></div></div><div class="rule-list"><span><b>Capacity threshold</b><small>Notify at 80%, escalate at 95%</small></span><span><b>Zero-count anomaly</b><small>No count during trading hours</small></span><span><b>Queue duration</b><small>Queue sustained for 15+ minutes</small></span></div></article></div>
+      </section>
+
+      <section id="view-standards" class="view">
+        <article class="automation-strip card"><div><span class="wa-icon">WA</span><div><span class="section-kicker">WhatsApp automation · Showroom Standards</span><h2>Compliance and monitoring alerts</h2><p>Notify responsible managers when opening standards, monitored zones, device readiness, or checklist completion fall outside target.</p></div></div><div class="automation-flow"><span>Standard missed</span><i>→</i><span>Owner notified</span><i>→</i><span>Photo/action reply</span><i>→</i><span class="escalate">Escalate</span></div></article>
+        <div class="kpi-grid"><div class="kpi-card card"><span class="kpi-label">Compliant showrooms</span><strong>43 / 57</strong><span class="kpi-foot good">75.4%</span></div><div class="kpi-card card"><span class="kpi-label">Opening checks late</span><strong>8</strong><span class="kpi-foot warn">Follow-up</span></div><div class="kpi-card card"><span class="kpi-label">Critical exceptions</span><strong>3</strong><span class="kpi-foot bad">Escalated</span></div><div class="kpi-card card"><span class="kpi-label">Acknowledged</span><strong>9</strong><span class="kpi-foot">Today</span></div><div class="kpi-card card"><span class="kpi-label">Resolved</span><strong>6</strong><span class="kpi-foot good">Within SLA</span></div></div>
       </section>
 
       <section id="view-opportunity" class="view">
@@ -305,6 +381,7 @@
       </section>
 
       <section id="view-devices" class="view">
+        <article class="automation-strip card"><div><span class="wa-icon">WA</span><div><span class="section-kicker">WhatsApp automation · Device Health</span><h2>Device outage and data-delay alerts</h2><p>Notify support and store owners when a counter, attendance terminal, or camera feed goes offline or stops reporting within the expected heartbeat window.</p></div></div><div class="automation-flow"><span>Heartbeat missed</span><i>→</i><span>Support notified</span><i>→</i><span>Restore service</span><i>→</i><span class="escalate">SLA escalation</span></div></article>
         <div class="kpi-grid">
           <div class="kpi-card card"><span class="kpi-label">Attendance terminals</span><strong id="dvAttendance">—</strong><span class="kpi-foot">Reporting / total</span></div>
           <div class="kpi-card card"><span class="kpi-label">People counters</span><strong id="dvCounters">—</strong><span class="kpi-foot">Reporting / total</span></div>
@@ -332,9 +409,31 @@
         </article>
       </section>
 
+      <section id="view-receivers" class="view">
+        <article class="card receiver-banner">
+          <div><span class="section-kicker">Demo routing workspace</span><h2>Receivers</h2><p>Add, edit or remove recipient routes for prototype review. Changes are stored only in this browser using local storage; they do not alter any production routing and cannot send WhatsApp messages.</p></div>
+          <span class="mode-badge">BROWSER-LOCAL DEMO</span>
+        </article>
+        <div class="grid receiver-grid">
+          <form id="receiverForm" class="card panel receiver-form">
+            <div class="panel-head"><div><span class="section-kicker">Recipient routing</span><h2 id="receiverFormTitle">Add receiver</h2><p>Choose which demo events this person would receive.</p></div></div>
+            <input type="hidden" id="receiverId">
+            <label>Receiver name<input id="receiverName" required maxlength="60" placeholder="e.g. Area Manager"></label>
+            <label>WhatsApp number<input id="receiverPhone" required inputmode="tel" maxlength="18" placeholder="e.g. +27 82 000 0000"></label>
+            <label>Store<select id="receiverStore" required></select></label>
+            <fieldset><legend>Event types</legend><label><input type="checkbox" name="receiverEvent" value="absence"> 30+ min no-one-present</label><label><input type="checkbox" name="receiverEvent" value="late_open"> Late store opening</label><label><input type="checkbox" name="receiverEvent" value="device"> Device offline</label><label><input type="checkbox" name="receiverEvent" value="traffic"> Low entry conversion</label></fieldset>
+            <div class="form-actions"><button class="primary-btn" type="submit">Save demo receiver</button><button class="ghost-btn" id="receiverCancel" type="button">Clear</button></div>
+          </form>
+          <article class="card table-card receiver-list-card">
+            <div class="panel-head"><div><span class="section-kicker">Current browser state</span><h2>Demo recipient routes</h2><p id="receiverCount">—</p></div><button class="ghost-btn" id="receiverReset" type="button">Reset demo data</button></div>
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Receiver</th><th>Store</th><th>Events</th><th>Persistence</th><th>Actions</th></tr></thead><tbody id="receiverRows"></tbody></table></div>
+          </article>
+        </div>
+      </section>
+
       <footer class="footer">
         <span>MAXIM Retail Intelligence</span>
-        <span>Prototype designed & powered by Thynkverse</span>
+        <span>Demo prototype · no LIVE messaging or Hikvision connection</span>
       </footer>
     </main>
   </div>
@@ -343,3 +442,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
