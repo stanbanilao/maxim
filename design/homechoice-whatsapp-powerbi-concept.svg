@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1030" viewBox="0 0 1440 1030" role="img" aria-label="Power BI style conceptual Homechoice Hikvision WhatsApp analytics dashboard with illustrative data">
+<defs><style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#203049}.muted{fill:#74839b}.white{fill:#fff}.small{font-size:13px}.tiny{font-size:11px}.label{font-size:15px;font-weight:700}.big{font-size:35px;font-weight:700}.head{font-size:25px;font-weight:700}.brand{font-size:23px;font-weight:800}.green{fill:#099d75}.orange{fill:#e99c25}.red{fill:#d64545}.blue{fill:#3166cc}.line{stroke:#e7ecf3;stroke-width:1}.box{fill:#fff;stroke:#e4eaf1;stroke-width:1}.dark{fill:#10233a}
+</style></defs>
+<rect width="1440" height="1030" fill="#f5f7fa"/>
+<rect width="232" height="1030" fill="#12243b"/>
+<rect width="232" height="7" fill="#e22e35"/>
+<text x="26" y="57" class="white brand">MAXIM<tspan fill="#f04c55"> IT</tspan></text>
+<text x="26" y="82" class="small" fill="#a6b8d1">STORE INTELLIGENCE</text>
+<line x1="25" y1="108" x2="205" y2="108" stroke="#30425a"/>
+<rect x="14" y="137" width="202" height="44" rx="9" fill="#314b6a"/><rect x="14" y="137" width="5" height="44" rx="2" fill="#ed333b"/><text x="38" y="164" class="white label">Overview</text>
+<text x="38" y="220" class="small" fill="#cad6e7">WhatsApp Alerts</text>
+<text x="38" y="268" class="small" fill="#cad6e7">Store Performance</text>
+<text x="38" y="316" class="small" fill="#cad6e7">Receivers &amp; Routing</text>
+<text x="38" y="364" class="small" fill="#cad6e7">Escalations</text>
+<text x="38" y="412" class="small" fill="#cad6e7">Reports</text>
+<text x="38" y="460" class="small" fill="#cad6e7">Alert Rules</text>
+<text x="26" y="967" class="tiny" fill="#93a6c1">HOMECHOICE × HIKVISION</text><text x="26" y="985" class="tiny" fill="#93a6c1">VISUAL CONCEPT • NOT LIVE</text>
+<text x="263" y="43" class="small muted">OPERATIONS / OVERVIEW</text>
+<text x="263" y="81" class="head">Homechoice Store Operations</text>
+<text x="263" y="104" class="small muted">Hikvision events + WhatsApp automation + customer traffic • management overview</text>
+<rect x="1175" y="34" width="225" height="36" rx="9" fill="#fff" stroke="#dde4ed"/><text x="1191" y="57" class="small">Period: Last 7 days  ▾</text>
+<rect x="263" y="125" width="214" height="41" rx="8" class="box"/><text x="279" y="151" class="small">Region: All regions  ▾</text>
+<rect x="490" y="125" width="222" height="41" rx="8" class="box"/><text x="506" y="151" class="small">Store: All stores  ▾</text>
+<rect x="725" y="125" width="218" height="41" rx="8" class="box"/><text x="741" y="151" class="small">Event: All types  ▾</text>
+<rect x="1196" y="125" width="204" height="41" rx="8" fill="#192f4a"/><text x="1223" y="150" class="small white">↧ Export Report</text>
+<text x="263" y="202" class="label">01  WhatsApp Automation</text><text x="470" y="202" class="small muted">• Priority monitoring</text>
+<g>
+<rect x="263" y="218" width="268" height="125" rx="11" class="box"/><rect x="263" y="218" width="268" height="5" rx="2" fill="#e33139"/><text x="281" y="251" class="small muted">Triggered events</text><text x="281" y="302" class="big">148</text><text x="281" y="326" class="tiny muted">Across 24 stores</text><circle cx="484" cy="278" r="25" fill="#fde7e8"/><text x="476" y="285" class="red label">!</text>
+<rect x="544" y="218" width="268" height="125" rx="11" class="box"/><rect x="544" y="218" width="268" height="5" rx="2" fill="#3269ce"/><text x="562" y="251" class="small muted">WhatsApp sent</text><text x="562" y="302" class="big">136</text><text x="562" y="326" class="tiny muted">92% of trigger events</text><circle cx="765" cy="278" r="25" fill="#e7efff"/><text x="756" y="284" class="blue label">↗</text>
+<rect x="825" y="218" width="268" height="125" rx="11" class="box"/><rect x="825" y="218" width="268" height="5" rx="2" fill="#009e79"/><text x="843" y="251" class="small muted">Acknowledged</text><text x="843" y="302" class="big">91</text><text x="843" y="326" class="tiny muted">67% of sent messages</text><circle cx="1046" cy="278" r="25" fill="#ddf6ee"/><text x="1038" y="285" class="green label">✓</text>
+<rect x="1106" y="218" width="294" height="125" rx="11" class="box"/><rect x="1106" y="218" width="294" height="5" rx="2" fill="#f4a32c"/><text x="1124" y="251" class="small muted">Escalated</text><text x="1124" y="302" class="big">17</text><text x="1124" y="326" class="tiny muted">Follow-up needed</text><circle cx="1353" cy="278" r="25" fill="#fff3de"/><text x="1346" y="285" class="orange label">↑</text>
+</g>
+<rect x="263" y="357" width="695" height="264" rx="11" class="box"/>
+<text x="284" y="388" class="label">WhatsApp triggers by event</text><text x="284" y="410" class="tiny muted">Number of automation events by category</text>
+<g font-size="13">
+<text x="283" y="451" class="small">No customer 30+ min</text><rect x="471" y="435" width="384" height="19" rx="4" fill="#edf1f6"/><rect x="471" y="435" width="332" height="19" rx="4" fill="#d93640"/><text x="867" y="450" class="small">64</text>
+<text x="283" y="496" class="small">Store alarm</text><rect x="471" y="480" width="384" height="19" rx="4" fill="#edf1f6"/><rect x="471" y="480" width="225" height="19" rx="4" fill="#ec9734"/><text x="867" y="495" class="small">43</text>
+<text x="283" y="541" class="small">Camera / device offline</text><rect x="471" y="525" width="384" height="19" rx="4" fill="#edf1f6"/><rect x="471" y="525" width="128" height="19" rx="4" fill="#4375cd"/><text x="867" y="540" class="small">25</text>
+<text x="283" y="586" class="small">Other events</text><rect x="471" y="570" width="384" height="19" rx="4" fill="#edf1f6"/><rect x="471" y="570" width="84" height="19" rx="4" fill="#76a19a"/><text x="867" y="585" class="small">16</text>
+</g>
+<rect x="972" y="357" width="428" height="264" rx="11" class="box"/>
+<text x="993" y="388" class="label">WhatsApp status funnel</text><text x="993" y="409" class="tiny muted">Separate messages from acknowledgement</text>
+<rect x="995" y="430" width="367" height="35" rx="5" fill="#dce8fc"/><text x="1008" y="452" class="small">Sent</text><text x="1322" y="452" class="small">136</text>
+<rect x="1015" y="475" width="326" height="35" rx="5" fill="#cbdff8"/><text x="1028" y="497" class="small">Delivered</text><text x="1301" y="497" class="small">128</text>
+<rect x="1035" y="520" width="286" height="35" rx="5" fill="#c6ebdf"/><text x="1048" y="542" class="small">Acknowledged</text><text x="1281" y="542" class="small">91</text>
+<text x="994" y="590" class="small red">17 escalated</text><text x="1093" y="590" class="tiny muted">• includes follow-up queue</text>
+<text x="263" y="653" class="label">02  Store Operations &amp; Traffic</text>
+<rect x="263" y="668" width="178" height="96" rx="11" class="box"/><text x="280" y="696" class="small muted">Pass-by traffic</text><text x="280" y="742" class="big">2,840</text>
+<rect x="453" y="668" width="178" height="96" rx="11" class="box"/><text x="470" y="696" class="small muted">Store entries</text><text x="470" y="742" class="big">1,126</text>
+<rect x="643" y="668" width="178" height="96" rx="11" class="box"/><text x="660" y="696" class="small muted">Conversion</text><text x="660" y="742" class="big">39.6%</text>
+<rect x="834" y="668" width="566" height="96" rx="11" class="box"/><text x="852" y="694" class="label">30-minute absence monitoring</text><text x="852" y="720" class="small muted">Rule: notify designated receiver when presence is absent for more than 30 minutes.</text><text x="852" y="745" class="tiny red">Concept requires validated Hikvision presence/event feed.</text>
+<rect x="263" y="779" width="793" height="205" rx="11" class="box"/><text x="284" y="806" class="label">Store-level report</text>
+<rect x="284" y="820" width="751" height="33" rx="5" fill="#eff3f7"/>
+<text x="297" y="841" class="tiny muted">STORE</text><text x="515" y="841" class="tiny muted">EVENTS</text><text x="620" y="841" class="tiny muted">SENT</text><text x="720" y="841" class="tiny muted">ACKNOWLEDGED</text><text x="891" y="841" class="tiny muted">ESCALATED</text>
+<text x="297" y="878" class="small">Store A</text><text x="525" y="878" class="small">32</text><text x="625" y="878" class="small">30</text><text x="748" y="878" class="small">25</text><text x="919" y="878" class="small red">4</text><line x1="284" y1="888" x2="1034" y2="888" class="line"/>
+<text x="297" y="913" class="small">Store B</text><text x="525" y="913" class="small">19</text><text x="625" y="913" class="small">18</text><text x="748" y="913" class="small">11</text><text x="919" y="913" class="small red">5</text><line x1="284" y1="923" x2="1034" y2="923" class="line"/>
+<text x="297" y="948" class="small">Store C</text><text x="525" y="948" class="small">14</text><text x="625" y="948" class="small">14</text><text x="748" y="948" class="small">13</text><text x="919" y="948" class="small red">1</text>
+<rect x="1070" y="779" width="330" height="205" rx="11" class="box"/><text x="1090" y="808" class="label">Receivers &amp; routing</text><text x="1090" y="833" class="tiny muted">Dedicated management tab (concept)</text>
+<rect x="1090" y="848" width="288" height="49" rx="6" fill="#f5f8fb"/><text x="1103" y="868" class="small">Store Manager</text><text x="1103" y="885" class="tiny muted">Store A • absence + alarm alerts</text>
+<rect x="1090" y="906" width="288" height="49" rx="6" fill="#f5f8fb"/><text x="1103" y="926" class="small">Regional Supervisor</text><text x="1103" y="943" class="tiny muted">All stores • escalations</text>
+<text x="263" y="1013" class="tiny muted">DESIGN-ONLY MOCKUP  •  Illustrative data; no live Hikvision or Meta WhatsApp API connection  •  Homechoice/Hikvision-inspired palette, subject to brand approval</text>
+</svg>
