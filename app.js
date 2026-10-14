@@ -213,6 +213,12 @@ function renderFootfall(){
   document.querySelectorAll("#footfallRows tr[data-store]").forEach(tr=>tr.addEventListener("click",()=>focusStore(tr.dataset.store)));
 }
 
+function renderPeopleCounting(){
+  const chart=$("peopleFlowChart"); if(!chart)return;
+  const series=hourlySeries(),max=Math.max(...series.map(x=>x.entries),1);
+  chart.innerHTML=series.map(x=>'<div class="hour-card"><button style="height:'+Math.max(6,x.entries/max*100)+'%"><span class="hour-tip">'+x.hour+' · '+fmt(x.entries)+' people</span></button><label>'+x.hour.slice(0,2)+'</label></div>').join("");
+}
+
 function loadStoreModel(){
   const list=filteredStores(), s=list.length===1?list[0]:null, t=totals(list);
   const delay=s?s.lateOpen:Math.round(t.avgDelay)||35;
@@ -257,7 +263,7 @@ function renderDevices(){
 }
 
 function renderAll(){
-  updateContext();renderWhatsApp();renderOverview();renderAttendance();renderFootfall();renderDevices();renderReceivers();
+  updateContext();renderWhatsApp();renderOverview();renderAttendance();renderFootfall();renderPeopleCounting();renderDevices();renderReceivers();
   if(state.view==="opportunity" && !$("resultBig").dataset.loaded){loadStoreModel();$("resultBig").dataset.loaded="1";}
 }
 
@@ -265,7 +271,10 @@ const titles={
   overview:["Homechoice Retail Operations","WhatsApp event monitoring first, with attendance, customer traffic and store entry retained below."],
   receivers:["WhatsApp Receivers","Browser-local demo routing for recipient and event assignment. No production routing is changed."],
   attendance:["Time & Attendance","Explore staffing compliance, late arrivals, absence and store-opening readiness."],
-  footfall:["People Counting & Footfall","Compare pass-by traffic, customer entry, capture and estimated conversion."],
+  frontdoor:["Showroom Front Door Events","Monitor unattended entrances, after-hours openings and WhatsApp response escalation."],
+  people:["People Counting","Monitor showroom occupancy, hourly flow, queues and people-counting alerts."],
+  footfall:["Foot Counter","Compare pass-by traffic, customer entry, capture and estimated conversion."],
+  standards:["Showroom Standards","Track showroom compliance exceptions and the WhatsApp follow-up workflow."],
   opportunity:["Revenue Opportunity","Test how delayed opening may translate into commercial opportunity."],
   devices:["Device Health","Separate real operating exceptions from offline or delayed data sources."]
 };
@@ -283,7 +292,8 @@ function exportCSV(){
   const blob=new Blob([csv],{type:"text/csv"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="maxim-retail-"+Date.now()+".csv";a.click();URL.revokeObjectURL(url);toast("CSV exported");
 }
 
-document.querySelectorAll(".nav-item").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.view)));
+document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.view)));
+document.querySelectorAll(".nav-item[data-locked]").forEach(b=>b.addEventListener("click",()=>toast(b.dataset.locked+" is a locked preview add-on")));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.go)));
 document.querySelector(".brand").addEventListener("click",e=>{e.preventDefault();navigate("overview")});
 $("regionFilter").addEventListener("change",e=>{state.region=e.target.value;state.store="all";updateStoreOptions();renderAll()});
@@ -308,3 +318,4 @@ $("receiverReset").addEventListener("click",()=>{state.receivers=defaultReceiver
 document.querySelectorAll("[data-late-band]").forEach(b=>b.addEventListener("click",()=>toast("Late-arrival band selected: "+b.dataset.lateBand)));
 
 populateFilters();$("receiverStore").innerHTML='<option value="all">All stores</option>'+stores.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join("");$("regionFilter").value="all";$("storeFilter").value="all";renderAll();loadStoreModel();
+
