@@ -12,9 +12,25 @@ const stores = [
   {id:"fs01",name:"Mimosa Mall",region:"Free State",expected:28,present:25,late:2,absent:3,passby:7180,entries:287,conversion:24,basket:690,lateOpen:31,offline:1,devices:{attendance:"offline",counter:"online",cctv:"online"}}
 ];
 
+const eventLabels={absence:"30+ min no-one-present",late_open:"Late store opening",device:"Device offline",traffic:"Low entry conversion"};
+const eventWindows=["opening","midday","closing"];
+const whatsappEvents=stores.flatMap((s,si)=>{
+  const counts={absence:Math.max(0,Math.round(s.lateOpen/10)-1),late_open:s.lateOpen?1:0,device:s.offline,traffic:captureRate(s)<4.6?2:0};
+  return Object.entries(counts).flatMap(([type,count])=>Array.from({length:count},(_,i)=>{
+    const delivered=(si+i)%7!==0, acknowledged=delivered&&(si+i)%3!==0, escalated=!acknowledged&&((si+i)%2===0||type==="absence");
+    return {id:s.id+"-"+type+"-"+i,storeId:s.id,type,window:eventWindows[(si+i)%3],triggered:1,sent:(si+i)%11!==0?1:0,delivered:delivered?1:0,acknowledged:acknowledged?1:0,escalated:escalated?1:0,duration:type==="absence"?32+((si*7+i*9)%39):0};
+  }));
+});
+
+const defaultReceivers=[
+  {id:"r1",name:"Store Operations Demo",phone:"+27 82 000 0101",storeId:"all",events:["absence","late_open"]},
+  {id:"r2",name:"Regional Response Demo",phone:"+27 82 000 0102",storeId:"gpt03",events:["absence","device","traffic"]}
+];
+
 const state = {
   view:"overview", region:"all", store:"all", period:1, sort:{key:"opportunity",dir:"desc"},
-  search:"", risk:"all", attendanceThreshold:0, captureDesc:true, deviceFilter:"all", pinnedHour:null
+  search:"", risk:"all", attendanceThreshold:0, captureDesc:true, deviceFilter:"all", pinnedHour:null,
+  time:"all",event:"all",receivers:loadReceivers()
 };
 
 const $ = id => document.getElementById(id);
@@ -34,6 +50,10 @@ function storeOpportunity(s){
   return passers * (captureRate(s)/100) * (s.conversion/100) * s.basket;
 }
 function statusFor(s){ return attendanceRate(s)<92 || s.lateOpen>=30 || s.offline>0 ? "attention" : "healthy"; }
+function loadReceivers(){
+  try{return JSON.parse(localStorage.getItem("maxim-demo-receivers"))||defaultReceivers.map(x=>({...x,events:[...x.events]}))}catch{return defaultReceivers.map(x=>({...x,events:[...x.events]}))}
+}
+function saveReceivers(){localStorage.setItem("maxim-demo-receivers",JSON.stringify(state.receivers))}
 
 function filteredStores(){
   return stores.filter(s => (state.region==="all" || s.region===state.region) && (state.store==="all" || s.id===state.store));
@@ -68,7 +88,52 @@ function updateStoreOptions(){
 function updateContext(){
   const region=state.region==="all"?"All regions":state.region;
   const store=state.store==="all"?"All stores":stores.find(s=>s.id===state.store)?.name||"All stores";
-  $("filterContext").textContent=region+" · "+store+" · "+periodLabel();
+  const event=state.event==="all"?"All WhatsApp events":eventLabels[state.event];
+  const time=state.time==="all"?"All day":state.time[0].toUpperCase()+state.time.slice(1);
+  $("filterContext").textContent=region+" · "+store+" · "+periodLabel()+" · "+time+" · "+event;
+}
+
+function filteredEvents(){
+  const allowed=new Set(filteredStores().map(s=>s.id));
+  return whatsappEvents.filter(e=>allowed.has(e.storeId)&&(state.time==="all"||e.window===state.time)&&(state.event==="all"||e.type===state.event));
+}
+function eventTotals(list=filteredEvents()){
+  const f=periodFactor(),sum=k=>Math.round(list.reduce((a,e)=>a+e[k],0)*f);
+  return {triggered:sum("triggered"),sent:sum("sent"),delivered:sum("delivered"),acknowledged:sum("acknowledged"),escalated:sum("escalated")};
+}
+function renderWhatsApp(){
+  const events=filteredEvents(),t=eventTotals(events),rate=(a,b)=>pct(b?a/b*100:0);
+  $("waTriggered").textContent=fmt(t.triggered);$("waSent").textContent=fmt(t.sent);$("waDelivered").textContent=fmt(t.delivered);$("waAcknowledged").textContent=fmt(t.acknowledged);$("waEscalated").textContent=fmt(t.escalated);
+  $("waSentRate").textContent=rate(t.sent,t.triggered)+" of triggered";$("waDeliveryRate").textContent=rate(t.delivered,t.sent)+" of sent";$("waAckRate").textContent=rate(t.acknowledged,t.delivered)+" of delivered";$("waEscRate").textContent=rate(t.escalated,t.triggered)+" of triggered";
+  $("waEventTotal").textContent=fmt(t.triggered)+" events";
+  const byType=Object.keys(eventLabels).map(type=>({type,count:events.filter(e=>e.type===type).length*periodFactor()})),max=Math.max(1,...byType.map(x=>x.count));
+  $("eventTypeChart").innerHTML=byType.map(x=>'<button class="event-row" data-event-type="'+x.type+'"><span>'+eventLabels[x.type]+'</span><div><i style="width:'+Math.max(x.count?7:0,x.count/max*100)+'%"></i></div><strong>'+fmt(x.count)+'</strong></button>').join("");
+  document.querySelectorAll("[data-event-type]").forEach(b=>b.addEventListener("click",()=>{state.event=b.dataset.eventType;$("eventFilter").value=state.event;renderAll()}));
+  const absence=events.filter(e=>e.type==="absence").sort((a,b)=>b.duration-a.duration).slice(0,6),aMax=Math.max(60,...absence.map(e=>e.duration));
+  $("absenceChart").innerHTML=absence.length?absence.map(e=>{const s=stores.find(x=>x.id===e.storeId);return '<button data-absence-store="'+s.id+'"><span>'+s.name+'</span><div><i style="width:'+(e.duration/aMax*100)+'%"></i><b style="left:'+(30/aMax*100)+'%"></b></div><strong>'+e.duration+' min</strong></button>'}).join(""):'<p class="empty-state">No 30-minute absence alerts match these filters.</p>';
+  document.querySelectorAll("[data-absence-store]").forEach(b=>b.addEventListener("click",()=>focusStore(b.dataset.absenceStore)));
+  const rows=filteredStores().map(s=>{const list=events.filter(e=>e.storeId===s.id),x=eventTotals(list),top=Object.keys(eventLabels).sort((a,b)=>list.filter(e=>e.type===b).length-list.filter(e=>e.type===a).length)[0];return {s,x,top};}).filter(r=>r.x.triggered).sort((a,b)=>b.x.triggered-a.x.triggered);
+  $("whatsappStoreRows").innerHTML=rows.map(({s,x,top})=>'<tr class="clickable" data-wa-store="'+s.id+'"><td><span class="store-title">'+s.name+'</span><span class="store-sub">'+s.region+'</span></td><td>'+fmt(x.triggered)+'</td><td>'+fmt(x.delivered)+'</td><td>'+fmt(x.acknowledged)+'</td><td><span class="status-pill '+(x.escalated?"offline":"healthy")+'">'+fmt(x.escalated)+'</span></td><td>'+eventLabels[top]+'</td><td>'+rate(x.acknowledged,x.delivered)+'</td></tr>').join("")||'<tr><td colspan="7">No demo events match the current filters.</td></tr>';
+  document.querySelectorAll("[data-wa-store]").forEach(tr=>tr.addEventListener("click",()=>focusStore(tr.dataset.waStore)));
+}
+
+function receiverStoreName(id){return id==="all"?"All stores":stores.find(s=>s.id===id)?.name||"Unknown store"}
+function clearReceiverForm(){
+  $("receiverForm").reset();$("receiverId").value="";$("receiverFormTitle").textContent="Add receiver";
+}
+function renderReceivers(){
+  $("receiverCount").textContent=state.receivers.length+" browser-local demo route"+(state.receivers.length===1?"":"s");
+  $("receiverRows").innerHTML=state.receivers.map(r=>'<tr><td><span class="store-title">'+r.name+'</span><span class="store-sub">'+r.phone+'</span></td><td>'+receiverStoreName(r.storeId)+'</td><td><div class="tag-list">'+r.events.map(e=>'<span>'+eventLabels[e]+'</span>').join("")+'</div></td><td><span class="status-pill warning">Local demo only</span></td><td><div class="row-actions"><button class="mini-link" data-edit-receiver="'+r.id+'">Edit</button><button class="delete-btn" data-delete-receiver="'+r.id+'">Delete</button></div></td></tr>').join("")||'<tr><td colspan="5">No demo receiver routes saved in this browser.</td></tr>';
+  document.querySelectorAll("[data-edit-receiver]").forEach(b=>b.addEventListener("click",()=>editReceiver(b.dataset.editReceiver)));
+  document.querySelectorAll("[data-delete-receiver]").forEach(b=>b.addEventListener("click",()=>deleteReceiver(b.dataset.deleteReceiver)));
+}
+function editReceiver(id){
+  const r=state.receivers.find(x=>x.id===id);if(!r)return;$("receiverId").value=r.id;$("receiverName").value=r.name;$("receiverPhone").value=r.phone;$("receiverStore").value=r.storeId;document.querySelectorAll('[name="receiverEvent"]').forEach(c=>c.checked=r.events.includes(c.value));$("receiverFormTitle").textContent="Edit receiver";$("receiverName").focus();
+}
+function deleteReceiver(id){state.receivers=state.receivers.filter(r=>r.id!==id);saveReceivers();renderReceivers();clearReceiverForm();toast("Demo receiver removed from this browser")}
+function submitReceiver(e){
+  e.preventDefault();const events=[...document.querySelectorAll('[name="receiverEvent"]:checked')].map(c=>c.value);if(!events.length){toast("Choose at least one event type");return}
+  const item={id:$("receiverId").value||"r"+Date.now(),name:$("receiverName").value.trim(),phone:$("receiverPhone").value.trim(),storeId:$("receiverStore").value,events};const i=state.receivers.findIndex(r=>r.id===item.id);if(i>=0)state.receivers[i]=item;else state.receivers.push(item);saveReceivers();renderReceivers();clearReceiverForm();toast("Demo route saved locally — no message sent");
 }
 
 function hourlySeries(list=filteredStores()){
@@ -192,12 +257,13 @@ function renderDevices(){
 }
 
 function renderAll(){
-  updateContext();renderOverview();renderAttendance();renderFootfall();renderDevices();
+  updateContext();renderWhatsApp();renderOverview();renderAttendance();renderFootfall();renderDevices();renderReceivers();
   if(state.view==="opportunity" && !$("resultBig").dataset.loaded){loadStoreModel();$("resultBig").dataset.loaded="1";}
 }
 
 const titles={
-  overview:["National Retail Overview","Attendance, customer traffic and commercial opportunity in one live-style view."],
+  overview:["Homechoice Retail Operations","WhatsApp event monitoring first, with attendance, customer traffic and store entry retained below."],
+  receivers:["WhatsApp Receivers","Browser-local demo routing for recipient and event assignment. No production routing is changed."],
   attendance:["Time & Attendance","Explore staffing compliance, late arrivals, absence and store-opening readiness."],
   footfall:["People Counting & Footfall","Compare pass-by traffic, customer entry, capture and estimated conversion."],
   opportunity:["Revenue Opportunity","Test how delayed opening may translate into commercial opportunity."],
@@ -212,8 +278,8 @@ function focusStore(id){
 }
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2200)}
 function exportCSV(){
-  const rows=filteredStores().map(s=>[s.name,s.region,attendanceRate(s).toFixed(1),s.late*periodFactor(),s.passby*periodFactor(),s.entries*periodFactor(),captureRate(s).toFixed(2),Math.round(storeOpportunity(s)*periodFactor())]);
-  const csv=[["Store","Region","Attendance %","Late","Pass-by","Entries","Capture %","Opportunity R"],...rows].map(r=>r.join(",")).join("\n");
+  const rows=filteredStores().map(s=>{const w=eventTotals(filteredEvents().filter(e=>e.storeId===s.id));return [s.name,s.region,w.triggered,w.sent,w.delivered,w.acknowledged,w.escalated,attendanceRate(s).toFixed(1),s.late*periodFactor(),s.passby*periodFactor(),s.entries*periodFactor(),captureRate(s).toFixed(2),Math.round(storeOpportunity(s)*periodFactor())]});
+  const csv=[["Store","Region","WhatsApp triggered","WhatsApp sent","WhatsApp delivered","WhatsApp acknowledged","WhatsApp escalated","Attendance %","Late","Pass-by","Entries","Capture %","Opportunity R"],...rows].map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\n");
   const blob=new Blob([csv],{type:"text/csv"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="maxim-retail-"+Date.now()+".csv";a.click();URL.revokeObjectURL(url);toast("CSV exported");
 }
 
@@ -223,7 +289,9 @@ document.querySelector(".brand").addEventListener("click",e=>{e.preventDefault()
 $("regionFilter").addEventListener("change",e=>{state.region=e.target.value;state.store="all";updateStoreOptions();renderAll()});
 $("storeFilter").addEventListener("change",e=>{state.store=e.target.value;renderAll()});
 $("periodFilter").addEventListener("change",e=>{state.period=Number(e.target.value);renderAll()});
-$("resetFilters").addEventListener("click",()=>{state.region="all";state.store="all";state.period=1;$("regionFilter").value="all";updateStoreOptions();$("periodFilter").value="1";renderAll();toast("Filters reset")});
+$("timeFilter").addEventListener("change",e=>{state.time=e.target.value;renderAll()});
+$("eventFilter").addEventListener("change",e=>{state.event=e.target.value;renderAll()});
+$("resetFilters").addEventListener("click",()=>{state.region="all";state.store="all";state.period=1;state.time="all";state.event="all";$("regionFilter").value="all";updateStoreOptions();$("periodFilter").value="1";$("timeFilter").value="all";$("eventFilter").value="all";renderAll();toast("Filters reset")});
 $("storeSearch").addEventListener("input",e=>{state.search=e.target.value;renderOverviewTable()});
 $("storeRiskFilter").addEventListener("change",e=>{state.risk=e.target.value;renderOverviewTable()});
 document.querySelectorAll("[data-sort]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.sort;state.sort.dir=state.sort.key===k&&state.sort.dir==="desc"?"asc":"desc";state.sort.key=k;renderOverviewTable()}));
@@ -234,6 +302,9 @@ document.querySelectorAll("[data-device-filter]").forEach(b=>b.addEventListener(
 document.querySelectorAll(".scenario-btn").forEach(b=>b.addEventListener("click",()=>applyScenario(b.dataset.scenario)));
 $("loadStoreModel").addEventListener("click",()=>{loadStoreModel();toast("Store assumptions reloaded")});
 $("exportBtn").addEventListener("click",exportCSV);
+$("receiverForm").addEventListener("submit",submitReceiver);
+$("receiverCancel").addEventListener("click",clearReceiverForm);
+$("receiverReset").addEventListener("click",()=>{state.receivers=defaultReceivers.map(x=>({...x,events:[...x.events]}));saveReceivers();clearReceiverForm();renderReceivers();toast("Demo receivers restored")});
 document.querySelectorAll("[data-late-band]").forEach(b=>b.addEventListener("click",()=>toast("Late-arrival band selected: "+b.dataset.lateBand)));
 
-populateFilters();$("regionFilter").value="all";$("storeFilter").value="all";renderAll();loadStoreModel();
+populateFilters();$("receiverStore").innerHTML='<option value="all">All stores</option>'+stores.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join("");$("regionFilter").value="all";$("storeFilter").value="all";renderAll();loadStoreModel();
