@@ -114,6 +114,14 @@
             <div class="panel-head"><div><span class="section-kicker">30-minute rule</span><h2>No-one-present alerts</h2><p>Duration after the monitored area remained clear. Threshold begins at 30 minutes.</p></div><span class="badge alert-badge">Threshold · 30 min</span></div>
             <div id="absenceChart" class="absence-chart"></div>
           </article>
+          <article class="card panel traffic-compact-panel">
+            <div class="panel-head">
+              <div><span class="section-kicker">Traffic pulse</span><h2>Pass-by vs store entry</h2><p>Hourly storefront traffic and captured entries.</p></div>
+              <span class="badge" id="trafficPeak">Peak —</span>
+            </div>
+            <div id="trafficChart" class="bar-chart compact-bar-chart" aria-label="Hourly traffic chart"></div>
+            <div class="chart-legend compact-legend"><span><i class="legend-pass"></i>Pass-by</span><span><i class="legend-entry"></i>Entries</span></div>
+          </article>
         </div>
 
         <article class="card table-card whatsapp-report-card">
@@ -149,24 +157,8 @@
           </button>
         </div>
 
-        <div class="grid overview-grid">
-          <article class="card panel">
-            <div class="panel-head">
-              <div>
-                <span class="section-kicker">Traffic pulse</span>
-                <h2>Pass-by vs store entry</h2>
-                <p>Hover or tap an hour to inspect the traffic and capture rate.</p>
-              </div>
-              <span class="badge" id="trafficPeak">Peak —</span>
-            </div>
-            <div id="trafficChart" class="bar-chart" aria-label="Hourly traffic chart"></div>
-            <div class="chart-legend">
-              <span><i class="legend-pass"></i>Pass-by</span>
-              <span><i class="legend-entry"></i>Entries</span>
-            </div>
-          </article>
-
-          <article class="card panel opportunity-panel">
+        <div class="overview-support-data" aria-hidden="true">
+          <article class="opportunity-panel">
             <div class="panel-head">
               <div>
                 <span class="section-kicker">Operational impact</span>
